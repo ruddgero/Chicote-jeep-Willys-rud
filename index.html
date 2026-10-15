@@ -6,582 +6,315 @@
   <meta name="theme-color" content="#020617">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Chicote & Ponto 1AVB/1AVP - Willys AP</title>
+  <title>Chicote & Ponto 1AVB/1AVP - Willys AP Pro</title>
 
-  <!-- Manifesto PWA com Ícone Integrado -->
   <link rel="manifest" href='data:application/manifest+json,{"name":"Chicote Willys AP","short_name":"Chicote AP","start_url":"./index.html","display":"standalone","background_color":"#020617","theme_color":"#eab308","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23020617%22/%3E%3Ctext y=%2268%22 font-size=%2265%22 x=%2218%22 fill=%22%23eab308%22%3E⚡%3C/text%3E%3C/svg%3E","sizes":"192x192 512x512","type":"image/svg+xml","purpose":"any maskable"}]}'>
 
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-    body { background-color: #020617; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding-bottom: 70px; line-height: 1.5; }
+    body { background-color: #020617; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding-bottom: 70px; line-height: 1.5; transition: background 0.2s, color 0.2s; }
+    body.light-mode { background-color: #ffffff; color: #020617; }
+    body.light-mode header { background: #f1f5f9; border-bottom-color: #d97706; }
+    body.light-mode nav { background: #e2e8f0; }
+    body.light-mode .card { background: #f8fafc; border-color: #cbd5e1; }
+    body.light-mode .step-box { background: #f1f5f9; border-left-color: #d97706; }
+    body.light-mode .step-title { color: #0f172a; }
+    body.light-mode td { color: #1e293b; border-bottom-color: #e2e8f0; }
+    body.light-mode th { background: #e2e8f0; color: #475569; }
+    body.light-mode .connector-box { background: #f1f5f9; border-color: #d97706; }
+    body.light-mode .pin-slot { background: #ffffff; border-color: #cbd5e1; }
     
-    header { background: #0f172a; padding: 14px 16px; border-bottom: 2px solid #eab308; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+    header { background: #0f172a; padding: 12px 16px; border-bottom: 2px solid #eab308; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
     .header-content { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    h1 { color: #eab308; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+    h1 { color: #eab308; font-size: 15px; font-weight: 900; text-transform: uppercase; }
     .subhead { color: #94a3b8; font-size: 11px; }
 
+    .header-tools { display: flex; align-items: center; gap: 6px; }
+    .tool-btn { background: #1e293b; color: #eab308; border: 1px solid #334155; padding: 5px 9px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
     .ecu-switch { display: flex; background: #020617; border: 1px solid #334155; border-radius: 20px; padding: 2px; }
-    .ecu-btn { background: transparent; border: none; color: #94a3b8; padding: 5px 12px; border-radius: 16px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .ecu-btn { background: transparent; border: none; color: #94a3b8; padding: 4px 10px; border-radius: 16px; font-size: 11px; font-weight: bold; cursor: pointer; }
     .ecu-btn.active { background: #eab308; color: #020617; }
 
-    nav { background: #1e293b; overflow-x: auto; white-space: nowrap; display: flex; position: sticky; top: 62px; z-index: 90; border-bottom: 1px solid #334155; scrollbar-width: none; }
+    nav { background: #1e293b; overflow-x: auto; white-space: nowrap; display: flex; position: sticky; top: 58px; z-index: 90; border-bottom: 1px solid #334155; scrollbar-width: none; }
     nav::-webkit-scrollbar { display: none; }
-    .nav-btn { background: transparent; border: none; border-bottom: 3px solid transparent; color: #94a3b8; padding: 12px 14px; font-size: 12px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
+    .nav-btn { background: transparent; border: none; border-bottom: 3px solid transparent; color: #94a3b8; padding: 10px 12px; font-size: 12px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
     .nav-btn.active { color: #eab308; border-bottom-color: #eab308; background: #0f172a; }
 
     .container { padding: 14px; max-width: 900px; margin: 0 auto; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
-    .card { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
-    .card-title { color: #eab308; font-size: 15px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
-    .badge { background: #064e3b; color: #34d399; font-size: 10px; padding: 3px 8px; border-radius: 12px; border: 1px solid #059669; font-weight: bold; font-family: monospace; }
+    .card { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+    .card-title { color: #eab308; font-size: 14px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .badge { background: #064e3b; color: #34d399; font-size: 10px; padding: 2px 7px; border-radius: 10px; border: 1px solid #059669; font-weight: bold; font-family: monospace; }
 
-    .step-box { background: #1e293b; border-left: 4px solid #eab308; padding: 10px 12px; margin-bottom: 10px; border-radius: 0 6px 6px 0; font-size: 12px; }
+    .step-box { background: #1e293b; border-left: 4px solid #eab308; padding: 10px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0; font-size: 12px; }
     .step-title { font-weight: bold; color: #fff; margin-bottom: 2px; }
-    .text-dim { color: #94a3b8; font-size: 11px; }
 
-    .table-container { overflow-x: auto; border: 1px solid #334155; border-radius: 8px; margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-    thead { background: #020617; }
-    th { color: #94a3b8; padding: 10px 8px; border-bottom: 1px solid #334155; font-size: 11px; text-transform: uppercase; font-family: monospace; }
-    td { padding: 9px 8px; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
-    tr:last-child td { border-bottom: none; }
-    .pin { color: #eab308; font-weight: bold; font-family: monospace; font-size: 13px; }
+    .search-box { width: 100%; background: #020617; border: 1px solid #eab308; color: #fff; padding: 9px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 10px; }
+    .table-container { overflow-x: auto; border: 1px solid #334155; border-radius: 8px; margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { background: #020617; color: #94a3b8; padding: 8px; border-bottom: 1px solid #334155; text-align: left; }
+    td { padding: 8px; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
+    .pin { color: #eab308; font-weight: bold; font-family: monospace; }
 
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
-    .box-blue { background: #0b192c; border: 1px solid #1d4ed8; border-radius: 8px; padding: 12px; }
-    .box-green { background: #06281e; border: 1px solid #047857; border-radius: 8px; padding: 12px; }
+    .connector-box { background: #020617; border: 2px solid #eab308; border-radius: 8px; padding: 12px; margin-bottom: 12px; font-family: monospace; font-size: 11px; }
+    .connector-title { color: #eab308; font-weight: bold; margin-bottom: 6px; font-size: 13px; font-family: sans-serif; display: flex; justify-content: space-between; }
+    .pin-grid { display: flex; gap: 8px; margin-top: 8px; }
+    .pin-slot { background: #1e293b; border: 1px solid #475569; padding: 6px 10px; border-radius: 4px; text-align: center; flex: 1; }
+    .pin-slot strong { color: #eab308; font-size: 12px; display: block; }
 
-    .diag-btn { width: 100%; background: #1e293b; color: #f8fafc; border: 1px solid #475569; padding: 11px 12px; border-radius: 6px; font-size: 12px; text-align: left; margin-bottom: 8px; cursor: pointer; }
-    .diag-btn:active { background: #334155; }
-    .res-box { display: none; padding: 12px; border-radius: 8px; font-size: 12px; margin-top: 10px; line-height: 1.4; }
+    .camera-zone { border: 2px dashed #eab308; background: #020617; border-radius: 8px; padding: 16px; text-align: center; margin-bottom: 12px; }
+    .camera-btn { background: #eab308; color: #020617; font-weight: bold; padding: 10px 16px; border-radius: 6px; border: none; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .preview-img { max-width: 100%; max-height: 200px; border-radius: 6px; margin-top: 10px; display: none; border: 1px solid #475569; }
+    .form-select, .form-input { width: 100%; background: #1e293b; color: #fff; border: 1px solid #475569; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 8px; }
 
-    .firing-order { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-family: monospace; font-size: 15px; font-weight: bold; color: #eab308; }
-    .order-item { background: #020617; border: 1px solid #eab308; border-radius: 6px; padding: 4px 10px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+    .box-blue { background: #0b192c; border: 1px solid #1d4ed8; border-radius: 8px; padding: 10px; }
+    .box-green { background: #06281e; border: 1px solid #047857; border-radius: 8px; padding: 10px; }
+    .diag-btn { width: 100%; background: #1e293b; color: #f8fafc; border: 1px solid #475569; padding: 10px; border-radius: 6px; font-size: 12px; text-align: left; margin-bottom: 6px; cursor: pointer; }
+    .res-box { display: none; padding: 10px; border-radius: 6px; font-size: 12px; margin-top: 8px; }
+    .bip-btn { background: #2563eb; color: #fff; border: none; padding: 10px 14px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .bip-btn:active { background: #1d4ed8; transform: scale(0.98); }
   </style>
 </head>
 <body>
 
-  <!-- CABEÇALHO -->
   <header>
     <div class="header-content">
       <div>
-        <h1>⚡ CHICOTE & PONTO | WILLYS AP</h1>
+        <h1>⚡ CHICOTE & PONTO | WILLYS AP PRO</h1>
         <p class="subhead">Manual de Bancada e Campo 1AVB & 1AVP</p>
       </div>
-      <div class="ecu-switch">
-        <button id="btn-1avb" class="ecu-btn active" onclick="selecionarModelo('1AVB')">1AVB</button>
-        <button id="btn-1avp" class="ecu-btn" onclick="selecionarModelo('1AVP')">1AVP</button>
+      <div class="header-tools">
+        <button class="tool-btn" onclick="alternarLanterna()" title="Modo Lanterna / Contraste">💡 Lanterna</button>
+        <button class="tool-btn" onclick="tocarBip(880, 150)" title="Bip do Multímetro">🔊 Bip</button>
+        <div class="ecu-switch">
+          <button id="btn-1avb" class="ecu-btn active" onclick="selecionarModelo('1AVB')">1AVB</button>
+          <button id="btn-1avp" class="ecu-btn" onclick="selecionarModelo('1AVP')">1AVP</button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- ABAS -->
   <nav>
-    <button class="nav-btn active" onclick="trocarAba(event, 'roteiro')">🚀 1. Partida</button>
-    <button class="nav-btn" onclick="trocarAba(event, 'ponto')">⏱️ 2. Ponto AP</button>
-    <button class="nav-btn" onclick="trocarAba(event, 'fios')">⚡ 3. 14 Fios</button>
-    <button class="nav-btn" onclick="trocarAba(event, 'reles')">🔋 4. Relés</button>
-    <button class="nav-btn" onclick="trocarAba(event, 'hall')">🔄 5. Teste Hall</button>
-    <button class="nav-btn" onclick="trocarAba(event, 'diferencas')">⚖️ 6. 1AVB vs 1AVP</button>
-    <button class="nav-btn" onclick="trocarAba(event, 'checklist')">🛡️ 7. Checklist</button>
+    <button class="nav-btn active" onclick="trocarAba(event, 'fios')">🔍 Busca Cores & Pinos</button>
+    <button class="nav-btn" onclick="trocarAba(event, 'calculadora')">🧮 Teste Multímetro</button>
+    <button class="nav-btn" onclick="trocarAba(event, 'foto')">📸 Câmera Conector</button>
+    <button class="nav-btn" onclick="trocarAba(event, 'desenhos')">🔌 Desenhos Conectores</button>
+    <button class="nav-btn" onclick="trocarAba(event, 'esquema')">🗺️ Esquema Elétrico</button>
+    <button class="nav-btn" onclick="trocarAba(event, 'seguranca')">🛡️ Fusíveis & Bitolas</button>
+    <button class="nav-btn" onclick="trocarAba(event, 'roteiro')">🚀 Partida</button>
+    <button class="nav-btn" onclick="trocarAba(event, 'ponto')">⏱️ Ponto AP</button>
+    <button class="nav-btn" onclick="trocarAba(event, 'reles')">🔋 Relés</button>
+    <button class="nav-btn" onclick="trocarAba(event, 'hall')">🔄 Teste Hall</button>
   </nav>
 
   <div class="container">
 
-    <!-- 1. ROTEIRO -->
-    <section id="tab-roteiro" class="tab-pane active">
+    <!-- 1. BUSCA POR CORES E PINOS -->
+    <section id="tab-fios" class="tab-pane active">
       <div class="card">
         <div class="card-title">
-          <span>🚀 Roteiro: Da Bancada à Primeira Partida</span>
-          <span class="badge">Ordem Segura</span>
+          <span>🔍 Localizador Rápido de Fios e Pinos</span>
+          <span class="badge">Filtro Ativo</span>
         </div>
-        <div class="step-box">
-          <div class="step-title">Etapa 1: Aterramento de Potência Reforçado</div>
-          Ligue os <strong>Pinos 01 e 02</strong> com fio 1,5 mm² direto no bloco ou cabeçote do motor AP (limpe a tinta da superfície). Jamais aterre apenas na lata da carroceria.
-        </div>
-        <div class="step-box">
-          <div class="step-title">Etapa 2: Instalação dos Relés Auxiliares</div>
-          Monte os dois relés de 4 pinos (40A): o Relé 1 (Principal - alimenta o pino 23 da ECU) e o Relé 2 (Bomba/Bicos - acionado pelo pino 04 da ECU).
-        </div>
-        <div class="step-box">
-          <div class="step-title">Etapa 3: Sincronismo do Ponto Mecânico</div>
-          Coloque o volante em "OT", a polia do comando alinhada com o cabeçote e o rotor apontado para o corte da carcaça do distribuidor.
-        </div>
-        <div class="step-box">
-          <div class="step-title">Etapa 4: Medições Prévias (ECU DESPLUGADA)</div>
-          Ligue a chave de ignição e meça: Pino 23 deve ter 12V e Pinos 01/02 devem ter continuidade zero com a carcaça. Desligue a chave e plugue a ECU.
-        </div>
-        <div class="step-box">
-          <div class="step-title">Etapa 5: Pressurização e Partida</div>
-          Ligue a chave: a bomba deve zumbir por 2 a 3 segundos e parar. Dê a partida: o motor deve funcionar de imediato.
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. PONTO AP -->
-    <section id="tab-ponto" class="tab-pane">
-      <div class="card">
-        <div class="card-title">
-          <span>⏱️ Sincronismo do Ponto do Motor AP</span>
-          <span class="badge">Sincronização 3 Eixos</span>
-        </div>
-        <div class="step-box">
-          <div class="step-title">1. Virabrequim (PMS)</div>
-          Gire o motor até o traço zero ou gravação <strong>"OT"</strong> do volante coincidir com o ponteiro na janela da carcaça da embreagem.
-        </div>
-        <div class="step-box">
-          <div class="step-title">2. Comando de Válvulas</div>
-          O ponto na polia do comando deve alinhar com a face superior do cabeçote (válvulas do 1º cilindro fechadas).
-        </div>
-        <div class="step-box">
-          <div class="step-title">3. Distribuidor Hall (Eixo Auxiliar)</div>
-          Retire a tampa plástica. A lâmina de cobre do rotor deve apontar para o <strong>entalhe cavado na borda de ferro</strong> do distribuidor (saída da vela 1).
-        </div>
-        <div style="background: #020617; border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-top: 10px;">
-          <div style="font-size: 12px; font-weight: bold; color: #eab308; margin-bottom: 4px;">Ordem dos Cabos de Vela (Sentido Horário):</div>
-          <div class="firing-order">
-            <span class="order-item">1</span> ➔ <span class="order-item">3</span> ➔ <span class="order-item">4</span> ➔ <span class="order-item">2</span>
-          </div>
-          <p class="text-dim">Cilindro 1 na frente (correias) e 4 atrás (junto ao câmbio).</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. FIOS VITAIS -->
-    <section id="tab-fios" class="tab-pane">
-      <div class="card">
-        <div class="card-title">
-          <span>⚡ Circuito Vital Stand-Alone (14 Fios)</span>
-          <span class="badge">Mínimo Absoluto</span>
-        </div>
+        <input type="text" id="filtro-fios" class="search-box" placeholder="Digite a cor (ex: marrom, verde) ou número do pino..." onkeyup="filtrarFios()">
+        
         <div class="table-container">
-          <table>
+          <table id="tabela-fios">
             <thead>
-              <tr><th>Função</th><th>Pino ECU</th><th>Cor Original</th><th>Bitola</th><th>Destino</th></tr>
+              <tr><th>Pino ECU</th><th>Função</th><th>Cor Original</th><th>Bitola</th><th>Destino</th></tr>
             </thead>
             <tbody>
-              <tr><td>Massa de Potência</td><td class="pin">01 e 02</td><td>Marrom</td><td>1.5 mm²</td><td>Bloco / Cabeçote</td></tr>
-              <tr><td>Alimentação +12V</td><td class="pin">23</td><td>Preto</td><td>1.0 mm²</td><td>Saída 87 do Relé 1</td></tr>
-              <tr><td>Comando Relé Bomba</td><td class="pin">04</td><td>Verm./Amarelo</td><td>0.75 mm²</td><td>Pino 85 do Relé 2</td></tr>
-              <tr><td>Injetores Par 1-4</td><td class="pin">12</td><td>Marrom/Branco</td><td>1.0 mm²</td><td>Pulso negativo bicos 1 e 4</td></tr>
-              <tr><td>Injetores Par 2-3</td><td class="pin">27</td><td>Marrom/Amarelo</td><td>1.0 mm²</td><td>Pulso negativo bicos 2 e 3</td></tr>
-              <tr><td>Sinal Hall Distrib.</td><td class="pin">24</td><td>Verde/Branco</td><td>0.75 mm²</td><td>Pino central (0) distribuidor</td></tr>
-              <tr><td>Comando Bobina</td><td class="pin">25</td><td>Verde/Vermelho</td><td>0.75 mm²</td><td>Pino 3 da bobina plástica</td></tr>
-              <tr><td>+5V Sensores</td><td class="pin">09</td><td>Vermelho/Branco</td><td>0.50 mm²</td><td>Alimentação MAP e TPS</td></tr>
-              <tr><td>Massa Sensores</td><td class="pin">17</td><td>Marrom/Azul</td><td>0.50 mm²</td><td>Massa de sinal MAP e TPS</td></tr>
-              <tr><td>Sinal MAP</td><td class="pin">18</td><td>Amarelo/Verde</td><td>0.50 mm²</td><td>Retorno pressão do coletor</td></tr>
-              <tr><td>Sinal TPS</td><td class="pin">40</td><td>Branco/Vermelho</td><td>0.50 mm²</td><td>Retorno posição borboleta</td></tr>
-              <tr><td>Temp. Água (CTS)</td><td class="pin">16</td><td>Azul/Branco</td><td>0.50 mm²</td><td>Sinal sensor azul AP</td></tr>
-              <tr><td>Massa Eletrônica</td><td class="pin">33</td><td>Marrom/Preto</td><td>0.75 mm²</td><td>Massa CTS e (-) do Hall</td></tr>
-              <tr><td>Sinal Sonda Lambda</td><td class="pin">38</td><td>Preto</td><td>0.50 mm²</td><td>Sinal sonda 4 fios</td></tr>
+              <tr><td class="pin">01 e 02</td><td>Massa de Potência</td><td>Marrom</td><td>1.5 mm²</td><td>Bloco / Cabeçote</td></tr>
+              <tr><td class="pin">04</td><td>Relé da Bomba</td><td>Vermelho/Amarelo</td><td>0.75 mm²</td><td>Pino 85 do Relé 2</td></tr>
+              <tr><td class="pin">09</td><td>+5V Referência</td><td>Vermelho/Branco</td><td>0.50 mm²</td><td>Alimentação MAP e TPS</td></tr>
+              <tr><td class="pin">12</td><td>Injetores 1 e 4</td><td>Marrom/Branco</td><td>1.0 mm²</td><td>Pulso negativo par 1-4</td></tr>
+              <tr><td class="pin">16</td><td>Sensor CTS</td><td>Azul/Branco</td><td>0.50 mm²</td><td>Temp. Água (Sensor Azul)</td></tr>
+              <tr><td class="pin">17</td><td>Massa Sensores</td><td>Marrom/Azul</td><td>0.50 mm²</td><td>Massa de sinal MAP e TPS</td></tr>
+              <tr><td class="pin">18</td><td>Sinal MAP</td><td>Amarelo/Verde</td><td>0.50 mm²</td><td>Retorno Pressão Coletor</td></tr>
+              <tr><td class="pin">23</td><td>Alimentação +12V</td><td>Preto</td><td>1.0 mm²</td><td>Saída 87 do Relé 1</td></tr>
+              <tr><td class="pin">24</td><td>Sinal Hall</td><td>Verde/Branco</td><td>0.75 mm²</td><td>Pino central (0) Distribuidor</td></tr>
+              <tr><td class="pin">25</td><td>Comando Bobina</td><td>Verde/Vermelho</td><td>0.75 mm²</td><td>Pino 3 da Bobina Plástica</td></tr>
+              <tr><td class="pin">27</td><td>Injetores 2 e 3</td><td>Marrom/Amarelo</td><td>1.0 mm²</td><td>Pulso negativo par 2-3</td></tr>
+              <tr><td class="pin">33</td><td>Massa Eletrônica</td><td>Marrom/Preto</td><td>0.75 mm²</td><td>Massa do CTS e (-) do Hall</td></tr>
+              <tr><td class="pin">38</td><td>Sonda Lambda</td><td>Preto</td><td>0.50 mm²</td><td>Sinal Sensor Oxigênio</td></tr>
+              <tr><td class="pin">40</td><td>Sinal TPS</td><td>Branco/Vermelho</td><td>0.50 mm²</td><td>Posição Borboleta</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- 4. RELÉS -->
-    <section id="tab-reles" class="tab-pane">
+    <!-- 2. CALCULADORA DE MULTÍMETRO -->
+    <section id="tab-calculadora" class="tab-pane">
       <div class="card">
         <div class="card-title">
-          <span>🔋 Central de 2 Relés Auxiliares</span>
-          <span class="badge">40A Comum</span>
-        </div>
-        <div class="grid-2">
-          <div class="box-blue">
-            <div style="color: #60a5fa; font-weight: bold; font-size: 13px; margin-bottom: 6px;">Relé 1: Alimentação da ECU (Fusível 15A)</div>
-            <p style="font-size: 12px; font-family: monospace;">
-              <strong>Pino 30:</strong> +12V Direto Bateria (fio 2.5mm²)<br>
-              <strong>Pino 85:</strong> Negativo Chassi/Carcaça<br>
-              <strong>Pino 86:</strong> +12V Pós-Chave do Jeep (Linha 15)<br>
-              <strong>Pino 87:</strong> Saída +12V para o <strong>Pino 23 da ECU</strong>
-            </p>
-          </div>
-          <div class="box-green">
-            <div style="color: #34d399; font-weight: bold; font-size: 13px; margin-bottom: 6px;">Relé 2: Bomba e Injetores (Fusível 20A)</div>
-            <p style="font-size: 12px; font-family: monospace;">
-              <strong>Pino 30:</strong> +12V Direto Bateria (fio 2.5mm²)<br>
-              <strong>Pino 86:</strong> +12V Pós-Chave (ou puxado do pino 87 do Relé 1)<br>
-              <strong>Pino 85:</strong> Comando Negativo ECU (<strong>Pino 04</strong>)<br>
-              <strong>Pino 87:</strong> Saída +12V para Bomba, Positivo dos 4 Bicos e Sonda
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. TESTE HALL -->
-    <section id="tab-hall" class="tab-pane">
-      <div class="card">
-        <div class="card-title">
-          <span>🔄 Teste Prático do Distribuidor Hall (Pino 24)</span>
+          <span>🧮 Calculadora de Diagnóstico de Sensores</span>
           <span class="badge">Multímetro</span>
         </div>
-        <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 10px;">
-          Ficha do distribuidor: <strong>(+)</strong> = +12V pós-chave | <strong>(0) Central</strong> = Pino 24 | <strong>(-)</strong> = Pino 33.
-        </p>
-        <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 12px;">
-          Coloque o multímetro em 20V DC. Ponta preta na carcaça e vermelha no pino central (0) ou pino 24. Ligue a chave e rode o motor devagar à mão:
-        </p>
-
-        <button class="diag-btn" onclick="analisarHall('ok')">🟢 Leitura alternando entre 0V e ~5V (ou 11V)</button>
-        <button class="diag-btn" onclick="analisarHall('zero')">🔴 Leitura travada o tempo todo em 0V</button>
-        <button class="diag-btn" onclick="analisarHall('alto')">🔴 Leitura travada em nível alto direto (5V ou 12V)</button>
-
-        <div id="res-hall-ok" class="res-box" style="background: #064e3b; color: #a7f3d0; border: 1px solid #059669;">
-          <strong>✅ Sensor Hall Operacional:</strong> A ECU recebe a rotação perfeitamente.
+        
+        <div class="step-box" style="border-left-color: #38bdf8;">
+          <div class="step-title">1. Teste de Resistência do Sensor CTS (Água Azul)</div>
+          <p style="font-size: 11px; margin-bottom: 6px;">Insira a temperatura estimada do motor para verificar a resistência nominal esperada:</p>
+          <input type="number" id="input-temp" class="form-input" placeholder="Temperatura em °C (ex: 20, 40, 80, 90)" oninput="calcularCTS()">
+          <div id="resultado-cts" style="font-weight: bold; color: #38bdf8; font-size: 12px; margin-top: 4px;"></div>
         </div>
-        <div id="res-hall-zero" class="res-box" style="background: #450a0a; color: #fecaca; border: 1px solid #dc2626;">
-          <strong>❌ Sem Alimentação ou Sensor Danificado:</strong> Verifique se chegam 12V no terminal (+) da tomada e terra firme no (-). Se tiver e não subir, troque o sensor Hall.
+
+        <div class="step-box" style="border-left-color: #eab308; margin-top: 10px;">
+          <div class="step-title">2. Validador de Tensão dos 5V (Pino 09 da ECU)</div>
+          <p style="font-size: 11px; margin-bottom: 6px;">Insira o valor lido entre pino 09 e 17 (Escala 20V DC):</p>
+          <input type="number" step="0.1" id="input-tensao" class="form-input" placeholder="Tensão lida (ex: 5.0, 4.3, 12.0)" oninput="validarTensao()">
+          <div id="resultado-tensao" style="font-weight: bold; font-size: 12px; margin-top: 4px;"></div>
         </div>
-        <div id="res-hall-alto" class="res-box" style="background: #450a0a; color: #fecaca; border: 1px solid #dc2626;">
-          <strong>❌ Sensor Não Aterra o Circuito:</strong> O sinal fica em alta contínua. O sensor interno queimou ou a janela metálica soltou do eixo.
+
+        <div style="margin-top: 12px; text-align: center;">
+          <button class="bip-btn" onclick="tocarBip(1200, 250)">
+            🔊 Bip de Continuidade (Fio Concluído)
+          </button>
         </div>
       </div>
     </section>
 
-    <!-- 6. 1AVB vs 1AVP -->
-    <section id="tab-diferencas" class="tab-pane">
+    <!-- 3. CÂMERA E IDENTIFICADOR -->
+    <section id="tab-foto" class="tab-pane">
       <div class="card">
         <div class="card-title">
-          <span>⚖️ Diferenças Cruciais: 1AVB vs 1AVP</span>
-          <span class="badge" id="info-modelo">Modo: 1AVB</span>
+          <span>📸 Identificador Visual de Conector</span>
+          <span class="badge">Câmera Ativa</span>
         </div>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr><th>Característica</th><th style="color: #eab308;">Módulo 1AVB</th><th style="color: #38bdf8;">Módulo 1AVP</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Imobilizador</td><td>Sem imobilizador ou desbloqueio muito simples.</td><td><strong style="color: #ef4444;">Obrigatório desbloquear (immo-off)</strong> para Willys.</td></tr>
-              <tr><td>Ponto Inicial</td><td>Base de 9° com lâmpada estroboscópica em modo ajuste.</td><td>Distribuidor montado estritamente no zero (0°). Avanço 100% digital.</td></tr>
-              <tr><td>Chicote Físico</td><td>Mesmos 14 fios vitais.</td><td>Mesmos 14 fios vitais.</td></tr>
-            </tbody>
-          </table>
+        <div class="camera-zone">
+          <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="exibirFoto(event)">
+          <button class="camera-btn" onclick="document.getElementById('camera-input').click()">
+            📷 Tirar Foto do Conector
+          </button>
+          <img id="foto-preview" class="preview-img" alt="Foto Conector">
         </div>
+
+        <label style="font-size: 12px; color: #94a3b8; font-weight: bold;">Quantos pinos/vias tem o conector?</label>
+        <select id="sel-vias" class="form-select" onchange="identificarConector()">
+          <option value="">-- Selecione a quantidade de pinos --</option>
+          <option value="2">2 Vias (Plugue 2 furos)</option>
+          <option value="3">3 Vias (Plugue 3 furos)</option>
+          <option value="4">4 Vias (Plugue 4 furos)</option>
+          <option value="45">45 Vias (Régua grande da ECU)</option>
+        </select>
+        <div id="resultado-conector" style="display: none; margin-top: 8px;"></div>
       </div>
     </section>
 
-    <!-- 7. CHECKLIST -->
-    <section id="tab-checklist" class="tab-pane">
+    <!-- 4. DESENHO DOS CONECTORES -->
+    <section id="tab-desenhos" class="tab-pane">
       <div class="card">
         <div class="card-title">
-          <span>🛡️ Checklist de Bancada com Multímetro</span>
-          <span class="badge">Pré-Partida</span>
+          <span>🔌 Guia Visual dos Conectores Físicos</span>
+          <span class="badge">Pinagem Frontal</span>
         </div>
-        <div class="step-box">
-          <div class="step-title">1. Continuidade do Terra (Pinos 01 e 02)</div>
-          Multímetro em Ohms: ponta no pino 01/02 e na carcaça. Deve marcar <strong>menos de 0.3 Ohms</strong>.
-        </div>
-        <div class="step-box">
-          <div class="step-title">2. Tensão de Alimentação Pós-Chave (Pino 23)</div>
-          Multímetro em 20V DC: com a chave ligada, deve marcar entre <strong>12.0V e 12.6V</strong>.
-        </div>
-        <div class="step-box">
-          <div class="step-title">3. Linha 5V dos Sensores (Pino 09)</div>
-          Medir entre pino 09 e 17 no chicote: deve registrar <strong>5.0V</strong>.
-        </div>
-        <div class="step-box">
-          <div class="step-title">4. Bobina de Ignição (Tomada de 3 Pinos)</div>
-          Pino 1 = +12V pós-chave | Pino 2 = Terra bloco | Pino 3 = Sinal pino 25 da central.
-        </div>
-      </div>
-    </section>
-
-  </div>
-
-  <script>
-    // Registro do Service Worker para permitir a instalação no Android
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
-    }
-
-    function trocarAba(evt, idAba) {
-      var panes = document.getElementsByClassName('tab-pane');
-      for (var i = 0; i < panes.length; i++) panes[i].classList.remove('active');
-
-      var botoes = document.getElementsByClassName('nav-btn');
-      for (var j = 0; j < botoes.length; j++) botoes[j].classList.remove('active');
-
-      var alvo = document.getElementById('tab-' + idAba);
-      if (alvo) alvo.classList.add('active');
-      if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
-    }
-
-    function selecionarModelo(modelo) {
-      var btnAvb = document.getElementById('btn-1avb');
-      var btnAvp = document.getElementById('btn-1avp');
-      var label = document.getElementById('info-modelo');
-
-      if (modelo === '1AVB') {
-        btnAvb.classList.add('active');
-        btnAvp.classList.remove('active');
-        if (label) label.textContent = "Modo: 1AVB";
-      } else {
-        btnAvp.classList.add('active');
-        btnAvb.classList.remove('active');
-        if (label) label.textContent = "Modo: 1AVP";
-      }
-    }
-
-    function analisarHall(resultado) {
-      document.getElementById('res-hall-ok').style.display = 'none';
-      document.getElementById('res-hall-zero').style.display = 'none';
-      document.getElementById('res-hall-alto').style.display = 'none';
-
-      if (resultado === 'ok') document.getElementById('res-hall-ok').style.display = 'block';
-      if (resultado === 'zero') document.getElementById('res-hall-zero').style.display = 'block';
-      if (resultado === 'alto') document.getElementById('res-hall-alto').style.display = 'block';
-    }
-  </script>
-</body>
-</html>
--radius: 8px; margin-top: 10px;">
-          <div style="font-size: 12px; font-weight: bold; color: #eab308; margin-bottom: 4px;">Ordem dos Cabos de Vela (Sentido Horário):</div>
-          <div class="firing-order">
-            <span class="order-item">1</span> ➔ <span class="order-item">3</span> ➔ <span class="order-item">4</span> ➔ <span class="order-item">2</span>
+        
+        <div class="connector-box">
+          <div class="connector-title">
+            <span>BOBINA DE IGNIÇÃO (3 Vias)</span>
+            <span style="color:#60a5fa;">Módulo Plástico</span>
           </div>
-          <p class="text-dim">Contagem dos cilindros: 1º na frente (junto às correias) e 4º atrás (junto ao volante/câmbio).</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABA 3: 14 FIOS VITAIS -->
-    <section id="tab-fios" class="tab-pane">
-      <div class="card">
-        <div class="card-title">
-          <span>⚡ Circuito Stand-Alone Vital (14 Fios)</span>
-          <span class="badge">Mínimo para Funcionar</span>
-        </div>
-        <p style="font-size: 12px; color: #cbd5e1;">Apenas estes 14 pinos precisam estar ligados para o motor AP operar de forma autónoma no Willys:</p>
-
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Função</th>
-                <th>Pino ECU</th>
-                <th>Cor Original</th>
-                <th>Bitola</th>
-                <th>Destino</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Massa de Potência</td><td class="pin">01 e 02</td><td>Marrom</td><td>1.5 mm²</td><td>Bloco / Cabeçote</td></tr>
-              <tr><td>Alimentação +12V</td><td class="pin">23</td><td>Preto</td><td>1.0 mm²</td><td>Saída 87 do Relé 1</td></tr>
-              <tr><td>Comando Relé Bomba</td><td class="pin">04</td><td>Verm./Amarelo</td><td>0.75 mm²</td><td>Pino 85 do Relé 2</td></tr>
-              <tr><td>Injetores Par 1-4</td><td class="pin">12</td><td>Marrom/Branco</td><td>1.0 mm²</td><td>Pulso negativo bicos 1 e 4</td></tr>
-              <tr><td>Injetores Par 2-3</td><td class="pin">27</td><td>Marrom/Amarelo</td><td>1.0 mm²</td><td>Pulso negativo bicos 2 e 3</td></tr>
-              <tr><td>Sinal Hall Distrib.</td><td class="pin">24</td><td>Verde/Branco</td><td>0.75 mm²</td><td>Pino central (0) distribuidor</td></tr>
-              <tr><td>Comando Bobina</td><td class="pin">25</td><td>Verde/Vermelho</td><td>0.75 mm²</td><td>Pino 3 da bobina plástica</td></tr>
-              <tr><td>+5V Sensores</td><td class="pin">09</td><td>Vermelho/Branco</td><td>0.50 mm²</td><td>Alimentação MAP e TPS</td></tr>
-              <tr><td>Massa Sensores</td><td class="pin">17</td><td>Marrom/Azul</td><td>0.50 mm²</td><td>Massa de sinal MAP e TPS</td></tr>
-              <tr><td>Sinal MAP</td><td class="pin">18</td><td>Amarelo/Verde</td><td>0.50 mm²</td><td>Retorno pressão do coletor</td></tr>
-              <tr><td>Sinal TPS</td><td class="pin">40</td><td>Branco/Vermelho</td><td>0.50 mm²</td><td>Retorno posição borboleta</td></tr>
-              <tr><td>Temp. Água (CTS)</td><td class="pin">16</td><td>Azul/Branco</td><td>0.50 mm²</td><td>Sinal sensor azul AP</td></tr>
-              <tr><td>Massa Eletrônica</td><td class="pin">33</td><td>Marrom/Preto</td><td>0.75 mm²</td><td>Massa CTS e (-) do Hall</td></tr>
-              <tr><td>Sinal Sonda Lambda</td><td class="pin">38</td><td>Preto</td><td>0.50 mm²</td><td>Sinal sonda 4 fios</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABA 4: RELÉS -->
-    <section id="tab-reles" class="tab-pane">
-      <div class="card">
-        <div class="card-title">
-          <span>🔋 Central de 2 Relés Auxiliares</span>
-          <span class="badge">40A Comum</span>
-        </div>
-        <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 12px;">Utilize relés auxiliares de 4 pinos (40A) protegidos com fusíveis individuais:</p>
-
-        <div class="grid-2">
-          <!-- Relé 1 -->
-          <div class="box-blue">
-            <div style="color: #60a5fa; font-weight: bold; font-size: 13px; margin-bottom: 6px;">Relé 1: Alimentação da ECU (Fusível 15A)</div>
-            <p style="font-size: 12px; font-family: monospace;">
-              <strong>Pino 30:</strong> +12V Direto Bateria (fio 2.5mm²)<br>
-              <strong>Pino 85:</strong> Negativo Chassi/Carcaça<br>
-              <strong>Pino 86:</strong> +12V Pós-Chave do Jeep (Linha 15)<br>
-              <strong>Pino 87:</strong> Saída +12V para o <strong>Pino 23 da ECU</strong>
-            </p>
+          <div style="text-align: center; margin-bottom: 4px;">▲ TRAVA SUPERIOR ▲</div>
+          <div class="pin-grid">
+            <div class="pin-slot"><strong>Pino 1</strong>+12V Pós-Chave<br>(Linha 15)</div>
+            <div class="pin-slot"><strong>Pino 2</strong>Massa Bloco<br>(Potência)</div>
+            <div class="pin-slot"><strong>Pino 3</strong>Sinal ECU<br>(Pino 25)</div>
           </div>
+        </div>
 
-          <!-- Relé 2 -->
-          <div class="box-green">
-            <div style="color: #34d399; font-weight: bold; font-size: 13px; margin-bottom: 6px;">Relé 2: Bomba e Injetores (Fusível 20A)</div>
-            <p style="font-size: 12px; font-family: monospace;">
-              <strong>Pino 30:</strong> +12V Direto Bateria (fio 2.5mm²)<br>
-              <strong>Pino 86:</strong> +12V Pós-Chave (ou puxado do pino 87 do Relé 1)<br>
-              <strong>Pino 85:</strong> Comando Negativo ECU (<strong>Pino 04</strong>)<br>
-              <strong>Pino 87:</strong> Saída +12V para Bomba, Positivo dos 4 Bicos e Sonda
-            </p>
+        <div class="connector-box">
+          <div class="connector-title">
+            <span>DISTRIBUIDOR HALL (3 Vias)</span>
+            <span style="color:#34d399;">Sinal Rotação</span>
+          </div>
+          <div style="text-align: center; margin-bottom: 4px;">▲ TRAVA METÁLICA ▲</div>
+          <div class="pin-grid">
+            <div class="pin-slot"><strong>Terminal (+)</strong>+12V Pós-Chave<br>(Alimentação)</div>
+            <div class="pin-slot"><strong>Terminal (0)</strong>Sinal Hall ECU<br>(Pino 24)</div>
+            <div class="pin-slot"><strong>Terminal (-)</strong>Massa Sensores<br>(Pino 33)</div>
+          </div>
+        </div>
+
+        <div class="connector-box">
+          <div class="connector-title">
+            <span>SENSOR TPS (Borboleta - 3 Vias)</span>
+            <span style="color:#eab308;">Acelerador</span>
+          </div>
+          <div class="pin-grid">
+            <div class="pin-slot"><strong>Pino 1</strong>Massa Sinal (Pino 17)</div>
+            <div class="pin-slot"><strong>Pino 2</strong>Sinal TPS (Pino 40)</div>
+            <div class="pin-slot"><strong>Pino 3</strong>+5V Ref. (Pino 09)</div>
+          </div>
+        </div>
+
+        <div class="connector-box">
+          <div class="connector-title">
+            <span>SENSOR MAP / ACT (4 Vias no Coletor)</span>
+            <span style="color:#eab308;">Pressão & Ar</span>
+          </div>
+          <div class="pin-grid">
+            <div class="pin-slot"><strong>Pino 1</strong>Massa (Pino 17)</div>
+            <div class="pin-slot"><strong>Pino 2</strong>Temp. Ar (Pino 39)</div>
+            <div class="pin-slot"><strong>Pino 3</strong>+5V Ref. (Pino 09)</div>
+            <div class="pin-slot"><strong>Pino 4</strong>Sinal MAP (Pino 18)</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ABA 5: TESTE DO HALL -->
-    <section id="tab-hall" class="tab-pane">
+    <!-- 5. ESQUEMA ELÉTRICO INTEGRADO -->
+    <section id="tab-esquema" class="tab-pane">
       <div class="card">
         <div class="card-title">
-          <span>🔄 Teste Prático do Distribuidor Hall (Pino 24)</span>
-          <span class="badge">Multímetro</span>
+          <span>🗺️ Esquema Elétrico Stand-Alone</span>
+          <span class="badge">1AVB & 1AVP</span>
         </div>
-        <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 10px;">
-          Ficha de 3 pinos do distribuidor: <strong>(+)</strong> = +12V pós-chave | <strong>(0) Central</strong> = Pino 24 | <strong>(-)</strong> = Pino 33.
-        </p>
-        <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 12px;">
-          <strong>Procedimento:</strong> Coloque o multímetro em 20V DC. Conecte a ponta preta à carcaça e a ponta vermelha no pino central (0) ou pino 24. Ligue a chave de ignição e gire o motor devagar à mão pela correia:
-        </p>
+        <div style="background:#020617; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 11px; overflow-x: auto; white-space: pre; line-height: 1.4;">
+[ BATERIA 12V ]
+       |
+       +---> [ FUSÍVEL 15A ] ---> Pino 30 (Relé 1 Principal)
+       +---> [ FUSÍVEL 20A ] ---> Pino 30 (Relé 2 Bomba/Bicos)
+       |
+[ CHAVE IGNIÇÃO (Linha 15) ] ---> Pino 86 (Relé 1) & Pino 1 Bobina & (+) Hall
+       |
+   [ RELÉ 1 ] ---> Pino 87 ---> +12V PÓS-CHAVE PARA PINO 23 DA ECU
+   (Principal)     Pino 85 ---> Aterramento Carroceria / Chassi
+       |
+   [ RELÉ 2 ] ---> Pino 85 ---> COMANDO NEGATIVO DA BOMBA (PINO 04 DA ECU)
+   (Bomba/Bicos)   Pino 86 ---> Ligado no pino 87 do Relé 1
+                   Pino 87 ---> +12V Alimentação da Bomba Elétrica
+                                +12V Positivo Comum dos 4 Injetores
+                                +12V Aquecedor da Sonda Lambda
 
-        <button class="diag-btn" onclick="analisarHall('ok')">🟢 Leitura alternando entre 0V e ~5V (ou 11V)</button>
-        <button class="diag-btn" onclick="analisarHall('zero')">🔴 Leitura travada o tempo todo em 0V</button>
-        <button class="diag-btn" onclick="analisarHall('alto')">🔴 Leitura travada direto em nível alto (5V ou 12V)</button>
-
-        <div id="res-hall-ok" class="res-box" style="background: #064e3b; color: #a7f3d0; border: 1px solid #059669;">
-          <strong>✅ Sensor Hall Operacional:</strong> A central está a receber o sinal de rotação. Se o motor não der partida, verifique a bobina de ignição ou a pressão da linha de combustível.
-        </div>
-        <div id="res-hall-zero" class="res-box" style="background: #450a0a; color: #fecaca; border: 1px solid #dc2626;">
-          <strong>❌ Sem Alimentação ou Sensor Danificado:</strong> Verifique se chegam 12V no terminal (+) da ficha do distribuidor e massa firme no terminal (-). Se tiver alimentação e o sinal não subir, substitua o sensor Hall.
-        </div>
-        <div id="res-hall-alto" class="res-box" style="background: #450a0a; color: #fecaca; border: 1px solid #dc2626;">
-          <strong>❌ Sensor Não Aterra o Circuito:</strong> O sinal permanece alto permanentemente. O circuito de comutação do sensor avariou ou a janela metálica soltou-se do eixo.
+ 45 VIAS DA ECU:
+  01, 02 ------------------------> MASSA DE POTÊNCIA (DIRETO NO BLOCO)
+  04 ----------------------------> RELÉ DA BOMBA (PINO 85)
+  09 ----------------------------> LINHA +5V REFERÊNCIA (MAP E TPS)
+  12 ----------------------------> PULSO NEGATIVO BICOS 1 E 4
+  16 ----------------------------> SINAL TEMPERATURA ÁGUA CTS (SENSOR AZUL)
+  17 ----------------------------> MASSA DE SENSORES (MAP E TPS)
+  18 ----------------------------> SINAL DE PRESSÃO MAP
+  23 ----------------------------> ALIMENTAÇÃO +12V (SAÍDA 87 RELÉ 1)
+  24 ----------------------------> SINAL HALL ROTAÇÃO (PINO 0 DO DISTRIB)
+  25 ----------------------------> SINAL DA BOBINA (PINO 3 DA BOBINA)
+  27 ----------------------------> PULSO NEGATIVO BICOS 2 E 3
+  33 ----------------------------> MASSA REFERÊNCIA CTS E (-) DO HALL
+  38 ----------------------------> SINAL DA SONDA LAMBDA
+  40 ----------------------------> SINAL DE POSIÇÃO BORBOLETA (TPS)
         </div>
       </div>
     </section>
 
-    <!-- ABA 6: 1AVB vs 1AVP -->
-    <section id="tab-diferencas" class="tab-pane">
+    <!-- 6. SEGURANÇA: FUSÍVEIS E BITOLAS -->
+    <section id="tab-seguranca" class="tab-pane">
       <div class="card">
         <div class="card-title">
-          <span>⚖️ Diferenças Cruciais: 1AVB vs 1AVP</span>
-          <span class="badge" id="info-modelo">Modo: 1AVB</span>
+          <span>🛡️ Segurança Elétrica: Bitolas e Fusíveis</span>
+          <span class="badge">Oficina Willys</span>
         </div>
         <div class="table-container">
           <table>
             <thead>
-              <tr>
-                <th>Característica</th>
-                <th style="color: #eab308;">Módulo 1AVB</th>
-                <th style="color: #38bdf8;">Módulo 1AVP</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Imobilizador</td>
-                <td>Geralmente sem imobilizador ou desbloqueio muito simples.</td>
-                <td><strong style="color: #ef4444;">Obrigatório desbloquear (immo-off)</strong> para operar em Willys.</td>
-              </tr>
-              <tr>
-                <td>Ponto Inicial</td>
-                <td>Base de 9° com lâmpada estroboscópica em modo ajuste.</td>
-                <td>Distribuidor montado estritamente na marca zero (0°). Avanço 100% digital pela ECU.</td>
-              </tr>
-              <tr>
-                <td>Chicote Físico</td>
-                <td>Mesmos 14 fios vitais.</td>
-                <td>Mesmos 14 fios vitais.</td>
-              </tr>
-              <tr>
-                <td>Sensor Detonação</td>
-                <td>Mais tolerante com vibrações.</td>
-                <td>Mais sensível: se detetar folgas no motor, atrasa o ponto de imediato.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABA 7: CHECKLIST -->
-    <section id="tab-checklist" class="tab-pane">
-      <div class="card">
-        <div class="card-title">
-          <span>🛡️ Checklist de Bancada com Multímetro</span>
-          <span class="badge">Pré-Partida</span>
-        </div>
-        <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 10px;">Faça estas medições <strong>ANTES</strong> de encaixar a ficha de 45 vias na ECU:</p>
-
-        <div class="step-box">
-          <div class="step-title">1. Continuidade do Terra (Pinos 01 e 02)</div>
-          Multímetro na escala de resistência (Ohms): ponta no pino 01/02 e na carcaça do motor. Deve marcar <strong>menos de 0.3 Ohms</strong>.
-        </div>
-
-        <div class="step-box">
-          <div class="step-title">2. Tensão de Alimentação Pós-Chave (Pino 23)</div>
-          Multímetro em 20V DC: com a chave do Jeep ligada, a tensão deve estar entre <strong>12.0V e 12.6V</strong>.
-        </div>
-
-        <div class="step-box">
-          <div class="step-title">3. Linha de 5V dos Sensores (Pino 09)</div>
-          Medir entre o pino 09 e 17 no chicote: deve registrar <strong>5.0V</strong> estáveis.
-        </div>
-
-        <div class="step-box">
-          <div class="step-title">4. Bobina de Ignição (Tomada de 3 Pinos)</div>
-          Pino 1 = +12V pós-chave | Pino 2 = Terra de potência no bloco | Pino 3 = Sinal vindo do Pino 25 da ECU.
-        </div>
-      </div>
-    </section>
-
-  </div>
-
-  <script>
-    // Troca de Abas Direta
-    function trocarAba(evt, idAba) {
-      var panes = document.getElementsByClassName('tab-pane');
-      for (var i = 0; i < panes.length; i++) {
-        panes[i].classList.remove('active');
-      }
-
-      var botoes = document.getElementsByClassName('nav-btn');
-      for (var j = 0; j < botoes.length; j++) {
-        botoes[j].classList.remove('active');
-      }
-
-      var alvo = document.getElementById('tab-' + idAba);
-      if (alvo) {
-        alvo.classList.add('active');
-      }
-
-      if (evt && evt.currentTarget) {
-        evt.currentTarget.classList.add('active');
-      }
-    }
-
-    // Seletor de Modelo 1AVB / 1AVP
-    function selecionarModelo(modelo) {
-      var btnAvb = document.getElementById('btn-1avb');
-      var btnAvp = document.getElementById('btn-1avp');
-      var label = document.getElementById('info-modelo');
-
-      if (modelo === '1AVB') {
-        btnAvb.classList.add('active');
-        btnAvp.classList.remove('active');
-        if (label) label.textContent = "Modo: 1AVB";
-      } else {
-        btnAvp.classList.add('active');
-        btnAvb.classList.remove('active');
-        if (label) label.textContent = "Modo: 1AVP";
-      }
-    }
-
-    // Diagnóstico do Sensor Hall
-    function analisarHall(resultado) {
-      document.getElementById('res-hall-ok').style.display = 'none';
-      document.getElementById('res-hall-zero').style.display = 'none';
-      document.getElementById('res-hall-alto').style.display = 'none';
-
-      if (resultado === 'ok') document.getElementById('res-hall-ok').style.display = 'block';
-      if (resultado === 'zero') document.getElementById('res-hall-zero').style.display = 'block';
-      if (resultado === 'alto') document.getElementById('res-hall-alto').style.display = 'block';
-    }
-  </script>
-</body>
-</html>
+              <tr><th>Circuito / Aplicação</th><th>Bitola Mínima</th><th>Proteção Fusível</ta
