@@ -1,6 +1,6 @@
 {
-  "name": "Chicote & Ponto AP",
-  "short_name": "Chicote AP",
+  "name": "Chicote Willys AP",
+  "short_name": "Chicote Willys",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#020617",
@@ -8,7 +8,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/55/55230.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
