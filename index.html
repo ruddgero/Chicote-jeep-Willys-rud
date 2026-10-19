@@ -8,6 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Chicote & Ponto 1AVB/1AVP - Willys AP Pro</title>
 
+  <link rel="icon" type="image/png" href="./icon.png">
+  <link rel="apple-touch-icon" href="./icon.png">
   <link rel="manifest" href="./manifest.json">
 
   <style>
@@ -56,6 +58,13 @@
     th { background: #020617; color: #94a3b8; padding: 9px 8px; border-bottom: 1px solid #334155; text-align: left; }
     td { padding: 9px 8px; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
     .pin { color: #eab308; font-weight: bold; font-family: monospace; }
+
+    /* Barra de Progresso e Checklist */
+    .progress-bar-bg { width: 100%; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+    .progress-bar-fill { height: 100%; width: 0%; background: #10b981; transition: width 0.3s; }
+    .chk-fio { width: 18px; height: 18px; accent-color: #10b981; cursor: pointer; }
+    tr.fio-identificado td { opacity: 0.55; text-decoration: line-through; background: rgba(16, 185, 129, 0.08); }
+    tr.fio-identificado td:first-child { text-decoration: none; opacity: 1; }
 
     .connector-box { background: #020617; border: 2px solid #eab308; border-radius: 8px; padding: 12px; margin-bottom: 12px; font-family: monospace; font-size: 11px; }
     .connector-title { color: #eab308; font-weight: bold; margin-bottom: 6px; font-size: 13px; font-family: sans-serif; display: flex; justify-content: space-between; }
@@ -110,35 +119,149 @@
 
   <div class="container">
 
-    <!-- 1. BUSCA POR CORES E PINOS -->
+    <!-- 1. BUSCA POR CORES E PINOS (COM CHECKLIST) -->
     <section id="tab-fios" class="tab-pane active">
       <div class="card">
         <div class="card-title">
-          <span>🔍 Localizador Rápido de Fios e Pinos</span>
-          <span class="badge">Filtro Imediato</span>
+          <span>🔍 Localizador & Checklist de Fios</span>
+          <span class="badge" id="badge-progresso">0 de 14 identificados</span>
         </div>
-        <input type="text" id="filtro-fios" class="search-box" placeholder="Digite a cor (ex: marrom, azul) ou o pino..." oninput="filtrarFios()">
+
+        <!-- Barra de Progresso e Botão Reset -->
+        <div class="progress-bar-bg">
+          <div id="progresso-fios" class="progress-bar-fill"></div>
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+          <input type="text" id="filtro-fios" class="search-box" style="margin-bottom:0;" placeholder="Filtrar cor (ex: marrom, azul) ou pino..." oninput="filtrarFios()">
+          <button class="tool-btn" onclick="limparChecklist()" style="white-space: nowrap; color: #ef4444; border-color: #ef4444;">Limpar</button>
+        </div>
         
         <div class="table-container">
           <table id="tabela-fios">
             <thead>
-              <tr><th>Pino ECU</th><th>Função</th><th>Cor Original</th><th>Bitola</th><th>Destino</th></tr>
+              <tr>
+                <th style="width: 40px; text-align: center;">OK</th>
+                <th>Pino ECU</th>
+                <th>Função</th>
+                <th>Cor Original</th>
+                <th>Bitola</th>
+                <th>Destino</th>
+              </tr>
             </thead>
             <tbody>
-              <tr><td class="pin">01 e 02</td><td>Massa de Potência</td><td>Marrom</td><td>1.5 mm²</td><td>Bloco / Cabeçote</td></tr>
-              <tr><td class="pin">04</td><td>Relé da Bomba</td><td>Vermelho/Amarelo</td><td>0.75 mm²</td><td>Pino 85 do Relé 2</td></tr>
-              <tr><td class="pin">09</td><td>+5V Referência</td><td>Vermelho/Branco</td><td>0.50 mm²</td><td>Alimentação MAP e TPS</td></tr>
-              <tr><td class="pin">12</td><td>Injetores 1 e 4</td><td>Marrom/Branco</td><td>1.0 mm²</td><td>Pulso negativo par 1-4</td></tr>
-              <tr><td class="pin">16</td><td>Sensor CTS</td><td>Azul/Branco</td><td>0.50 mm²</td><td>Temp. Água (Sensor Azul)</td></tr>
-              <tr><td class="pin">17</td><td>Massa Sensores</td><td>Marrom/Azul</td><td>0.50 mm²</td><td>Massa de sinal MAP e TPS</td></tr>
-              <tr><td class="pin">18</td><td>Sinal MAP</td><td>Amarelo/Verde</td><td>0.50 mm²</td><td>Retorno Pressão Coletor</td></tr>
-              <tr><td class="pin">23</td><td>Alimentação +12V</td><td>Preto</td><td>1.0 mm²</td><td>Saída 87 do Relé 1</td></tr>
-              <tr><td class="pin">24</td><td>Sinal Hall</td><td>Verde/Branco</td><td>0.75 mm²</td><td>Pino central (0) Distribuidor</td></tr>
-              <tr><td class="pin">25</td><td>Comando Bobina</td><td>Verde/Vermelho</td><td>0.75 mm²</td><td>Pino 3 da Bobina Plástica</td></tr>
-              <tr><td class="pin">27</td><td>Injetores 2 e 3</td><td>Marrom/Amarelo</td><td>1.0 mm²</td><td>Pulso negativo par 2-3</td></tr>
-              <tr><td class="pin">33</td><td>Massa Eletrônica</td><td>Marrom/Preto</td><td>0.75 mm²</td><td>Massa do CTS e (-) do Hall</td></tr>
-              <tr><td class="pin">38</td><td>Sonda Lambda</td><td>Preto</td><td>0.50 mm²</td><td>Sinal Sensor Oxigênio</td></tr>
-              <tr><td class="pin">40</td><td>Sinal TPS</td><td>Branco/Vermelho</td><td>0.50 mm²</td><td>Posição Borboleta</td></tr>
+              <tr data-fio="p01-02">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">01 e 02</td>
+                <td>Massa de Potência</td>
+                <td>Marrom</td>
+                <td>1.5 mm²</td>
+                <td>Bloco / Cabeçote</td>
+              </tr>
+              <tr data-fio="p04">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">04</td>
+                <td>Relé da Bomba</td>
+                <td>Vermelho/Amarelo</td>
+                <td>0.75 mm²</td>
+                <td>Pino 85 do Relé 2</td>
+              </tr>
+              <tr data-fio="p09">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">09</td>
+                <td>+5V Referência</td>
+                <td>Vermelho/Branco</td>
+                <td>0.50 mm²</td>
+                <td>Alimentação MAP e TPS</td>
+              </tr>
+              <tr data-fio="p12">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">12</td>
+                <td>Injetores 1 e 4</td>
+                <td>Marrom/Branco</td>
+                <td>1.0 mm²</td>
+                <td>Pulso negativo par 1-4</td>
+              </tr>
+              <tr data-fio="p16">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">16</td>
+                <td>Sensor CTS</td>
+                <td>Azul/Branco</td>
+                <td>0.50 mm²</td>
+                <td>Temp. Água (Sensor Azul)</td>
+              </tr>
+              <tr data-fio="p17">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">17</td>
+                <td>Massa Sensores</td>
+                <td>Marrom/Azul</td>
+                <td>0.50 mm²</td>
+                <td>Massa de sinal MAP e TPS</td>
+              </tr>
+              <tr data-fio="p18">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">18</td>
+                <td>Sinal MAP</td>
+                <td>Amarelo/Verde</td>
+                <td>0.50 mm²</td>
+                <td>Retorno Pressão Coletor</td>
+              </tr>
+              <tr data-fio="p23">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">23</td>
+                <td>Alimentação +12V</td>
+                <td>Preto</td>
+                <td>1.0 mm²</td>
+                <td>Saída 87 do Relé 1</td>
+              </tr>
+              <tr data-fio="p24">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">24</td>
+                <td>Sinal Hall</td>
+                <td>Verde/Branco</td>
+                <td>0.75 mm²</td>
+                <td>Pino central (0) Distribuidor</td>
+              </tr>
+              <tr data-fio="p25">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">25</td>
+                <td>Comando Bobina</td>
+                <td>Verde/Vermelho</td>
+                <td>0.75 mm²</td>
+                <td>Pino 3 da Bobina Plástica</td>
+              </tr>
+              <tr data-fio="p27">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">27</td>
+                <td>Injetores 2 e 3</td>
+                <td>Marrom/Amarelo</td>
+                <td>1.0 mm²</td>
+                <td>Pulso negativo par 2-3</td>
+              </tr>
+              <tr data-fio="p33">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">33</td>
+                <td>Massa Eletrônica</td>
+                <td>Marrom/Preto</td>
+                <td>0.75 mm²</td>
+                <td>Massa do CTS e (-) do Hall</td>
+              </tr>
+              <tr data-fio="p38">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">38</td>
+                <td>Sonda Lambda</td>
+                <td>Preto</td>
+                <td>0.50 mm²</td>
+                <td>Sinal Sensor Oxigênio</td>
+              </tr>
+              <tr data-fio="p40">
+                <td style="text-align: center;"><input type="checkbox" class="chk-fio" onchange="toggleFio(this)"></td>
+                <td class="pin">40</td>
+                <td>Sinal TPS</td>
+                <td>Branco/Vermelho</td>
+                <td>0.50 mm²</td>
+                <td>Posição Borboleta</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -398,211 +521,4 @@
               30: +12V Bateria direto<br>
               85: Massa Chassi<br>
               86: +12V Pós-Chave Willys<br>
-              87: +12V para <strong>Pino 23 da ECU</strong>
-            </p>
-          </div>
-          <div class="box-green">
-            <strong style="color: #34d399;">Relé 2: Bomba e Bicos (20A)</strong>
-            <p style="font-size: 11px; margin-top: 4px;">
-              30: +12V Bateria direto<br>
-              86: +12V Pós-chave<br>
-              85: Comando Negativo ECU (<strong>Pino 04</strong>)<br>
-              87: +12V para Bomba, Positivo Bicos e Sonda
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 10. TESTE HALL -->
-    <section id="tab-hall" class="tab-pane">
-      <div class="card">
-        <div class="card-title">
-          <span>🔄 Teste Sensor Hall com Multímetro</span>
-          <span class="badge">Diagnóstico</span>
-        </div>
-        <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 8px;">
-          Escala 20V DC: Ponta preta na massa, ponta vermelha no <strong>Pino 24</strong>. Gire o motor devagar à mão:
-        </p>
-        <button class="diag-btn" onclick="analisarHall('ok')">🟢 Sinal oscila entre 0V e ~5V (ou 11V)</button>
-        <button class="diag-btn" onclick="analisarHall('zero')">🔴 Sinal travado em 0V</button>
-        <button class="diag-btn" onclick="analisarHall('alto')">🔴 Sinal travado alto contínuo</button>
-
-        <div id="res-hall-ok" class="res-box" style="background:#064e3b; color:#a7f3d0;">
-          <strong>✅ Sensor Perfeito:</strong> A central recebe rotação normalmente.
-        </div>
-        <div id="res-hall-zero" class="res-box" style="background:#450a0a; color:#fecaca;">
-          <strong>❌ Sem Sinal:</strong> Falta 12V no (+) ou terra no (-), ou sensor avariado.
-        </div>
-        <div id="res-hall-alto" class="res-box" style="background:#450a0a; color:#fecaca;">
-          <strong>❌ Não Comuta:</strong> Circuito travado ou janela desengatada do eixo.
-        </div>
-      </div>
-    </section>
-
-  </div>
-
-  <script>
-    // Registo seguro do Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js').catch(function() {});
-      });
-    }
-
-    // Navegação simples e direta entre abas
-    function trocarAba(idAba, botao) {
-      var panes = document.querySelectorAll('.tab-pane');
-      for (var i = 0; i < panes.length; i++) {
-        panes[i].classList.remove('active');
-      }
-      var botoes = document.querySelectorAll('.nav-btn');
-      for (var j = 0; j < botoes.length; j++) {
-        botoes[j].classList.remove('active');
-      }
-
-      var alvo = document.getElementById('tab-' + idAba);
-      if (alvo) alvo.classList.add('active');
-      if (botao) botao.classList.add('active');
-    }
-
-    // Alternador de modelo 1AVB / 1AVP
-    function selecionarModelo(modelo) {
-      var b1 = document.getElementById('btn-1avb');
-      var b2 = document.getElementById('btn-1avp');
-      if (modelo === '1AVB') {
-        b1.classList.add('active');
-        b2.classList.remove('active');
-      } else {
-        b2.classList.add('active');
-        b1.classList.remove('active');
-      }
-    }
-
-    // Modo Luz de ecrã (sem travar permissão de câmara)
-    function alternarLuz() {
-      document.body.classList.toggle('light-mode');
-    }
-
-    // Áudio do multímetro com proteção contra bloqueios de reprodução
-    var ctxAudio = null;
-    function tocarBip(freq, duracao) {
-      try {
-        var AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!ctxAudio) ctxAudio = new AudioContext();
-        if (ctxAudio.state === 'suspended') ctxAudio.resume();
-        
-        var osc = ctxAudio.createOscillator();
-        var ganho = ctxAudio.createGain();
-        osc.connect(ganho);
-        ganho.connect(ctxAudio.destination);
-        osc.type = 'sine';
-        osc.frequency.value = freq || 880;
-        ganho.gain.setValueAtTime(0.15, ctxAudio.currentTime);
-        osc.start();
-        osc.stop(ctxAudio.currentTime + ((duracao || 150) / 1000));
-      } catch (err) {}
-    }
-
-    // Filtro instantâneo da tabela
-    function filtrarFios() {
-      var termo = document.getElementById('filtro-fios').value.toLowerCase();
-      var linhas = document.querySelectorAll('#tabela-fios tbody tr');
-      for (var i = 0; i < linhas.length; i++) {
-        var texto = linhas[i].textContent.toLowerCase();
-        linhas[i].style.display = (texto.indexOf(termo) > -1) ? '' : 'none';
-      }
-    }
-
-    // Teste CTS
-    function calcularCTS() {
-      var t = parseFloat(document.getElementById('input-temp').value);
-      var out = document.getElementById('resultado-cts');
-      if (isNaN(t)) { out.innerHTML = ''; return; }
-      var val = "";
-      if (t <= 0) val = "≈ 5.500 Ω a 6.000 Ω (Motor Muito Frio)";
-      else if (t <= 20) val = "≈ 2.500 Ω a 3.000 Ω (Ambiente Frio)";
-      else if (t <= 40) val = "≈ 1.200 Ω a 1.500 Ω (Morno)";
-      else if (t <= 80) val = "≈ 300 Ω a 350 Ω (Quase Aquecido)";
-      else if (t <= 95) val = "≈ 200 Ω a 250 Ω (Trabalho Ideal)";
-      else val = "Abaixo de 180 Ω (Alerta Aquecimento)";
-      out.innerHTML = `🎯 Valor Esperado para ${t}°C: <strong>${val}</strong>`;
-    }
-
-    // Validação 5V
-    function validarTensao() {
-      var v = parseFloat(document.getElementById('input-tensao').value);
-      var out = document.getElementById('resultado-tensao');
-      if (isNaN(v)) { out.innerHTML = ''; return; }
-      if (v >= 4.8 && v <= 5.2) {
-        out.style.color = '#34d399';
-        out.innerHTML = `✅ ${v}V: Tensão Correta. Regulador da ECU operacional.`;
-      } else if (v < 4.8 && v > 0) {
-        out.style.color = '#ef4444';
-        out.innerHTML = `❌ ${v}V: Tensão Baixa. Sobrecarga ou curto no chicote.`;
-      } else if (v > 5.2) {
-        out.style.color = '#dc2626';
-        out.innerHTML = `🚨 ${v}V: Perigo. Linha de 12V nos sensores.`;
-      }
-    }
-
-    // Visualização da foto
-    function exibirFoto(e) {
-      var file = e.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(evt) {
-        var img = document.getElementById('foto-preview');
-        img.src = evt.target.result;
-        img.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // Identificação de conector
-    function identificarConector() {
-      var v = document.getElementById('sel-vias').value;
-      var out = document.getElementById('resultado-conector');
-      if (!v) { out.style.display = 'none'; return; }
-      out.style.display = 'block';
-
-      if (v === '2') {
-        out.innerHTML = `
-          <div class="step-box" style="border-left-color: #38bdf8;">
-            <div class="step-title">🔌 CONECTOR DE 2 VIAS IDENTIFICADO:</div>
-            <p><strong>Sensor de Temperatura da Água (CTS - Conector Azul):</strong></p>
-            <p>• Pino 1: Fio Marrom/Preto ➔ <strong>Pino 33</strong> da ECU (Massa).</p>
-            <p>• Pino 2: Fio Azul/Branco ➔ <strong>Pino 16</strong> da ECU (Sinal).</p>
-          </div>`;
-      } else if (v === '3') {
-        out.innerHTML = `
-          <div class="step-box" style="border-left-color: #eab308;">
-            <div class="step-title">🔌 CONECTOR DE 3 VIAS IDENTIFICADO:</div>
-            <p><strong>1. Bobina de Ignição:</strong> Pino 1 (+12V pós-chave) | Pino 2 (Massa bloco) | Pino 3 (Sinal Pino 25 ECU).</p>
-            <p style="margin-top:4px;"><strong>2. Distribuidor Hall:</strong> (+) +12V pós-chave | (0) Pino 24 | (-) Pino 33.</p>
-            <p style="margin-top:4px;"><strong>3. Sensor TPS:</strong> Pino 1 (Pino 17) | Pino 2 (Pino 40) | Pino 3 (Pino 09).</p>
-          </div>`;
-      } else if (v === '4') {
-        out.innerHTML = `
-          <div class="step-box" style="border-left-color: #34d399;">
-            <div class="step-title">🔌 CONECTOR DE 4 VIAS IDENTIFICADO:</div>
-            <p><strong>Sensor MAP / ACT:</strong> Pino 1 (Massa 17) | Pino 2 (Temp 39) | Pino 3 (+5V 09) | Pino 4 (Pressão 18).</p>
-            <p style="margin-top:4px;"><strong>Sonda Lambda:</strong> 2 Brancos (Aquecedor 12V e Massa) | Preto (Sinal Pino 38) | Cinza (Massa).</p>
-          </div>`;
-      } else if (v === '45') {
-        out.innerHTML = `
-          <div class="step-box" style="border-left-color: #eab308;">
-            <div class="step-title">🔌 CONECTOR DE 45 VIAS:</div>
-            <p>Conector central da ECU. Utilize a aba <strong>"🔍 Busca Fios"</strong> para testar a continuidade de cada terminal.</p>
-          </div>`;
-      }
-    }
-
-    function analisarHall(st) {
-      document.getElementById('res-hall-ok').style.display = (st === 'ok') ? 'block' : 'none';
-      document.getElementById('res-hall-zero').style.display = (st === 'zero') ? 'block' : 'none';
-      document.getElementById('res-hall-alto').style.display = (st === 'alto') ? 'block' : 'none';
-    }
-  </script>
-</body>
-</html>
+              87: +12
