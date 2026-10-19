@@ -1,4 +1,4 @@
-const CACHE_NAME = 'willys-ap-cache-v2';
+const CACHE_NAME = 'willys-ap-cache-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,7 +7,7 @@ const ASSETS_TO_CACHE = [
   './icon.png'
 ];
 
-// Instalação do Service Worker e gravação do novo cache
+// Instalação do Service Worker e gravação da nova cache v3
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -17,7 +17,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Ativação e limpeza do cache antigo v1
+// Ativação e eliminação imediata das caches antigas (v1 e v2)
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
